@@ -1,0 +1,58 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark py-4" style="position: sticky;top: 0;z-index:2;">
+    <div class="container-fluid">
+        {% load static %}
+        <a class="navbar-brand" href="/">
+            <img src="{%static 'home/images/Logo.png'%}" width="45" alt=""
+                class="rounded-circle d-inline-block align-middle pr-2">
+            CodeNShare
+        </a>
+        <button class=" navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+            aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav ms-auto">
+                {%if user.is_authenticated%}
+                <li class="nav-item">
+                    <a class="nav-link {%if title == "Your Feed"%} active {%endif%}" href="/wall">Feed</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {%if title == "Create Post"%} active {%endif%}" href="/create">Create Post</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {%if title == "Code"%} active {%endif%}" href="/code">Code</a>
+                </li>
+                {%endif%}
+                <form class="d-flex" action="/search" method="get">
+                    <input class="form-control me-2" type="search" placeholder="Search for Users" aria-label="Search"
+                        name="q">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
+                <!----
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        Dropdown link
+                    </a>
+                    
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <li><a class="dropdown-item" href="#">Action</a></li>
+                        <li><a class="dropdown-item" href="#">Another action</a></li>
+                        <li><a class="dropdown-item" href="#">Something else here</a></li>
+                    </ul>
+                
+                </li>
+            -->
+                {%if user.is_authenticated%}
+                <li class="nav-item">
+                    <a class="nav-link active" href="/u/{{user.url}}" id="nav-username">{{user.first_name}}'s Profile</a>
+                </li>
+                <li class="nav-item">
+                    <button type="button" class="btn btn-danger" onclick="window.location.href='/logout'">Logout</button>
+                    <!-- <a class="nav-link active" href="/logout">Logout</a> -->
+                </li>
+                {%endif%}
+            </ul>
+        </div>
+    </div>
+</nav>

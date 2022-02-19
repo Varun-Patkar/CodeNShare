@@ -1,0 +1,108 @@
+{%extends "home/base.html"%}
+{%block content%}
+{%load static%}
+<style>
+    .card {
+        background-color: white;
+        color: black;
+        border: px solid blue;
+        margin: 10px;
+        border-radius: 15px 15px 15px 15px;
+    }
+
+    .form-group {
+        position: absolute;
+
+        top: 86.5%;
+        right: 5%;
+        width: 10%;
+        transform: translateY(-50%);
+    }
+
+    .form-group1 {
+        position: absolute;
+
+        top: 86.5%;
+        right: 51%;
+        width: 10%;
+        transform: translateY(-50%);
+    }
+    .crops {
+        width: 20px;
+        height: 20px;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+</style>
+<div class="container-fluid bg-light text-dark">
+    <h1>Posts</h1>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {%for post in your_posts%}
+        <div class="col">
+            <div class="card" style="color: black;">
+                <div class="card-body">
+                    <h5 class="card-title">{{post.title}}</h5>
+                    <p class="card-text">{{post.content|truncatechars:79}}</p>
+                    <a href="/u/{{post.creator.url}}">
+                    <p class="card-text">Created By : {%if not post.creator.profile_picture%}
+                        <img class="crops" src="{%static 'home/images/default_user.png'%}">
+                        {%else%}
+                        <img class="crops" src='/{{post.creator.profile_picture.url|slice:"5:"}}'>
+                        {%endif%}{{post.creator.username}}</p>
+                    </a>
+                    <p class="card-text"><small class="text-muted">Last updated {{post.updatedTime|timesince}}
+                            ago</small></p>
+                    <p class="card-text"><small class="text-muted">Created On
+                            {{post.createdTime|date:"DATETIME_FORMAT"}}</small></p>
+                    <a href="/p/{{post.url}}" class="btn btn-primary" style='color:white!important'>See More>></a>
+                    <button class="btn btn-primary"
+                        onclick="copyToClipboard(window.location.href.split('/')[2]+'/p/'+'{{post.url}}'+'/')"><i
+                            class="fas fa-share"></i> Share</button>
+                    {%if user.is_authenticated%}
+                    {%if user != post.creator%}
+                    <form method="POST" action="/likep/">
+                        {% csrf_token %}
+                        <input type="hidden" value="{{post.url}}" name="post_url">
+                        <input type="hidden" value={{liked}} name="liked">
+                        <div class="form-group1">
+                            {%if user not in post.likers.all %}
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-thumbs-up"></i> {{post.likers.all|length}}
+                            </button>
+                            {%else%}
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-thumbs-up"></i> {{post.likers.all|length}}
+                            </button>
+                            {%endif%}
+                        </div>
+                    </form>
+                    {%else%}
+                    <button class="btn btn-primary" onclick="return alert('You can\'t like your own Post');">
+                        <i class="fas fa-thumbs-up"></i> {{post.likers.all|length}}
+                    </button>
+                    {%endif%}
+                    {%else%}
+                    <button class="btn btn-primary" onclick="return alert('You are not logged in');">
+                        <i class="fas fa-thumbs-up"></i> {{post.likers.all|length}}
+                    </button>
+                    {%endif%}
+                    {%if user.is_authenticated and user == post.creator%}
+                    <form method="POST" action="/deletep/">
+                        {% csrf_token %}
+                        <input type="hidden" value="{{post.url}}" name="post_url">
+                        <input type="hidden" value={{user}} name="user">
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?');">
+                                <i class="fas fa-trash-alt"></i> Delete
+                            </button>
+                        </div>
+                    </form>
+                    {%endif%}
+
+                </div>
+            </div>
+        </div>
+        {%endfor%}
+    </div>
+</div>
+{%endblock%}
